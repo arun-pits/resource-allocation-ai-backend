@@ -10,6 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+WEBSITE_URLS = {
+    'FRONTEND_URL': 'http://localhost:3000',
+    'BACKEND_URL': 'http://localhost:8000',
+    'WEBSITE_BASE_URL': 'https://yourdomain.com',
+    'API_BASE_URL': 'https://api.yourdomain.com',
+    'MEDIA_URL': '/media/',
+    'STATIC_URL': '/static/',
+}
+
 import sys
 from pathlib import Path
 
@@ -45,8 +54,9 @@ INSTALLED_APPS = [
     'corsheaders',
 
     # Custom Apps
-    'apps.projects.apps.ProjectsConfig',
+    # 'apps.project.apps.ProjectConfig',
     'apps.employee',
+    'apps.project',
     # 'apps.resources',
 ]
 

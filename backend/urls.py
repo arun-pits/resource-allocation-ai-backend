@@ -18,11 +18,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from apps.projects.views import api_home
+# from apps.project.views import api_home
 
 urlpatterns = [
     # path('api/', api_home),
     path('api/', include('apps.employee.urls')),
+    path('api/', include('apps.project.urls')),
     path('admin/', admin.site.urls),
-    path('projects/', include('apps.projects.urls')),
+    # path('project/', include('apps.project.urls')),
 ]

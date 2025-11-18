@@ -1,9 +1,11 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 from django.shortcuts import get_object_or_404
 from .models import Employee
 from .serializers import EmployeeSerializer
+from apps.project.models import ProjectAllocation
+from apps.project.serializers import ProjectSerializer
 
 class EmployeeViewSet(viewsets.ModelViewSet):
     queryset = Employee.objects.all()
@@ -111,3 +113,66 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             return Response({
                 'message': 'Employee not found'
             }, status=status.HTTP_404_NOT_FOUND)
+
+    @action(detail=True, methods=['get'])
+    def projects(self, request, pk=None):
+        """
+        Get all projects for a specific employee
+        """
+        try:
+            # Get all allocations for this employee
+            allocations = ProjectAllocation.objects.filter(employee_id=pk).select_related('project')
+            
+            projects_data = []
+            total_allocation = 0
+            
+            for allocation in allocations:
+                project_data = ProjectSerializer(allocation.project).data
+                project_data['employee_allocation'] = float(allocation.allocation)
+                projects_data.append(project_data)
+                total_allocation += float(allocation.allocation)
+            
+            return Response({
+                'employee_id': pk,
+                'total_allocation': total_allocation,
+                'project_count': len(projects_data),
+                'projects': projects_data
+            })
+            
+        except Exception as e:
+            return Response({
+                'message': 'Error fetching employee projects',
+                'error': str(e)
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+# Alternative function-based view (if you prefer this approach)
+@api_view(['GET'])
+def employee_projects_view(request, employee_id):
+    """
+    Get all projects for a specific employee - Function based view
+    """
+    try:
+        # Get all allocations for this employee
+        allocations = ProjectAllocation.objects.filter(employee_id=employee_id).select_related('project')
+        
+        projects_data = []
+        total_allocation = 0
+        
+        for allocation in allocations:
+            project_data = ProjectSerializer(allocation.project).data
+            project_data['employee_allocation'] = float(allocation.allocation)
+            projects_data.append(project_data)
+            total_allocation += float(allocation.allocation)
+        
+        return Response({
+            'employee_id': employee_id,
+            'total_allocation': total_allocation,
+            'project_count': len(projects_data),
+            'projects': projects_data
+        })
+        
+    except Exception as e:
+        return Response({
+            'message': 'Error fetching employee projects',
+            'error': str(e)
+        }, status=status.HTTP_400_BAD_REQUEST)
