@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Project, ProjectAllocation
 from apps.employee.models import Employee
 from apps.employee.serializers import EmployeeSerializer
+from django.contrib.auth import authenticate, get_user_model
 
 
 # ---------------------------------------------------
